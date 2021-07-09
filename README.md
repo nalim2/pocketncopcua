@@ -10,7 +10,7 @@ Configfile for the default deployment over pycharm
 		sudo python /tmp/pycharm_project_pocketnc/main.py 
 
 Make the script executabel:
-		sudo chmod +x
+		sudo chmod +x /usr/bin/opcuaserver.sh
 
 Note that the first line is critical.
 
