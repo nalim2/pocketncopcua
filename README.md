@@ -2,12 +2,12 @@
 
 Configfile for the default deployment over pycharm
 
-- Create a shell script such as sudo nano /usr/bin/opcuaserver.sh:
+- Create a shell script such as `sudo nano /usr/bin/opcuaserver.sh` check the path of your deployment:
 
 		#!/bin/bash
 
 		# start the python programm with sudo because of deployment config
-		sudo python /tmp/pycharm_project_pocketnc/main.py 
+		sudo python /home/pocketnc/opcserver/main.py
 
 Make the script executabel:
 		sudo chmod +x /usr/bin/opcuaserver.sh
