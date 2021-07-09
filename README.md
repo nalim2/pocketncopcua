@@ -9,6 +9,9 @@ Configfile for the default deployment over pycharm
 		# start the python programm with sudo because of deployment config
 		sudo python /tmp/pycharm_project_pocketnc/main.py 
 
+Make the script executabel:
+		sudo chmod +x
+
 Note that the first line is critical.
 
 - Create a service file in  /lib/systemd/opcserver.service such as:
