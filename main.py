@@ -14,6 +14,7 @@ from multiprocessing import Pool
 
 
 variableMap = {}
+
 server = Server()
 c = linuxcnc.command()
 
@@ -66,6 +67,7 @@ def init_variables_start_server():
     # populating our address space
     myfolder = objects.add_folder(idx, "pocketnc")
     myobj = myfolder.add_object(idx, "PocketNC")
+    variableMap["counter"] = myobj.add_variable(idx, "counter", 0)
     # Use a breakpoint in the code line below to debug your script.
     try:
         s = linuxcnc.stat()  # create a connection to the status channel
@@ -96,6 +98,7 @@ def start_server():
 
 
 def update_function():
+    variableMap["counter"].set_value(variableMap["counter"].get_value() + 1)
     s = linuxcnc.stat()  # create a connection to the status channel
     s.poll()  # get current values
 
@@ -112,8 +115,7 @@ def update_function():
 def update_loop():
     while True:
         update_function()
-        time.sleep(1)
-        print("Update")
+        time.sleep(0.1)
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.WARN)
