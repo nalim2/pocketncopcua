@@ -8,7 +8,7 @@ import logging
 import time
 import os
 
-from linuxcncopcua import start_server, init_variables_start_server, update_function
+from linuxcncopcua import *
 
 variableMap = {}
 

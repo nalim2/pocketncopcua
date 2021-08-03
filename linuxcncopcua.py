@@ -2,12 +2,11 @@ import inspect
 import linuxcnc
 import types
 
-from functionmanager import createFunction, update_function_lifecycle
-from functions.cnchoming import homeAllAxis, startHomingFunc, checkFinishedHomed, checkErrorHomed
-from functions.createfilefunction import startCreateFileFunc, checkFinisedCreateFile, checkErrorCreateFile
-from functions.movecnctorobotremove import startGoToRobotRemovePositionFunc, checkFinishedGoToRobotRemovePosition, \
-    checkErrorGoToRobotRemovePosition
-from functions.selectandstartprogram import startNCProgrammFunc, checkFinisedNCProgramm, checkErrorNCProgramm
+from functionmanager import *
+from cnchoming import *
+from createfilefunction import *
+from movecnctorobotremove import *
+from selectandstartprogram import *
 
 from main import variableMap, server, startSelectedProgramm, pauseSelectedProgramm, resumeSelectedProgramm, setModeMDI, \
     setModeAuto, setModeManual, setMoveRobotRemovePos
