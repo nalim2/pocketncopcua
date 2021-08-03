@@ -3,10 +3,10 @@ import linuxcnc
 import types
 
 from functionmanager import *
-from cnchoming import *
-from createfilefunction import *
-from movecnctorobotremove import *
-from selectandstartprogram import *
+from functions.cnchoming import *
+from functions.createfilefunction import *
+from functions.movecnctorobotremove import *
+from functions.selectandstartprogram import *
 
 from main import variableMap, server, startSelectedProgramm, pauseSelectedProgramm, resumeSelectedProgramm, setModeMDI, \
     setModeAuto, setModeManual, setMoveRobotRemovePos
