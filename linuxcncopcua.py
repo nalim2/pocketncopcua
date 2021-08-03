@@ -186,9 +186,9 @@ def init_variables_start_server():
         createFunction(customFunc, idx, startGoToRobotRemovePositionFunc, checkFinishedGoToRobotRemovePosition,
                        checkErrorGoToRobotRemovePosition, {}, "RobotRemovePos")
 
-        createFunction(customFunc, idx, startCreateFileFunc, checkFinisedCreateFile, checkErrorCreateFile, {"FileContent": "Testdigga", "ProgrammName": "/home"}, "WriteNCFile")
+        createFunction(customFunc, idx, startCreateFileFunc, checkFinisedCreateFile, checkErrorCreateFile, createfilefunction_defaultparams, "WriteNCFile")
         createFunction(customFunc, idx, startNCProgrammFunc, checkFinisedNCProgramm, checkErrorNCProgramm,
-                       {"ProgrammName": ""}, "startProgram")
+                       selectandstartprogram_defaultparams, "startProgram")
 
     except linuxcnc.error, detail:
         print "error", detail

@@ -3,6 +3,7 @@ import os
 from main import path
 from functionmanager import customFeatures
 
+createfilefunction_defaultparams = {"FileContent": "Testdigga", "ProgrammName": "/home"}
 
 def startCreateFileFunc(hal, funcName):
     print("Start CreateFile function")
