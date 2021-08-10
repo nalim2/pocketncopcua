@@ -3,7 +3,7 @@ from main import c, setModeManual
 
 def homeAllAxis(parent):
     c.wait_complete()
-    handle = c.home(0)
+    c.home(0)
     c.wait_complete()
     c.home(1)
     c.wait_complete()

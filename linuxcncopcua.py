@@ -2,6 +2,8 @@ import inspect
 import linuxcnc
 import types
 
+from opcua import ua
+from os.path import expanduser
 from functionmanager import *
 from functions.cnchoming import *
 from functions.createfilefunction import *
@@ -10,7 +12,7 @@ from functions.selectandstartprogram import *
 
 from main import variableMap, server, startSelectedProgramm, pauseSelectedProgramm, resumeSelectedProgramm, setModeMDI, \
     setModeAuto, setModeManual, setMoveRobotRemovePos
-
+debugprint = False
 pythonMethodMembers = ["clear",
                         "copy",
                         "fromkeys",
@@ -36,46 +38,53 @@ pythonMethodMembers = ["clear",
 
 
 def add_entry_to_model(ns, newKey, opcname, opcobject, value):
-    print "func", inspect.isfunction(value), "meth", inspect.ismethod(
-        value), "methDesc", inspect.ismethoddescriptor(
-        value), "dataDesc", inspect.isdatadescriptor(value), "frame", inspect.isframe(
-        value), "abstract", inspect.isabstract(
-        value), "gen", inspect.isgenerator(value), "class", inspect.isclass(value), \
-        "buildIn", inspect.isbuiltin(value), "code", inspect.iscode(
-        value), "memberDesc", inspect.ismemberdescriptor(value), \
-        "getset", inspect.isgetsetdescriptor(value), "routine", inspect.isroutine(
-        value), "trace", inspect.istraceback(value), \
-        "module", inspect.ismodule(value)
+    if debugprint :
+        print "func", inspect.isfunction(value), "meth", inspect.ismethod(
+            value), "methDesc", inspect.ismethoddescriptor(
+            value), "dataDesc", inspect.isdatadescriptor(value), "frame", inspect.isframe(
+            value), "abstract", inspect.isabstract(
+            value), "gen", inspect.isgenerator(value), "class", inspect.isclass(value), \
+            "buildIn", inspect.isbuiltin(value), "code", inspect.iscode(
+            value), "memberDesc", inspect.ismemberdescriptor(value), \
+            "getset", inspect.isgetsetdescriptor(value), "routine", inspect.isroutine(
+            value), "trace", inspect.istraceback(value), \
+            "module", inspect.ismodule(value)
     if isinstance(value, (dict, types.TypeType, types.ClassType)):
-        print "addDictionary:", newKey, value
+        if debugprint:
+            print "addDictionary:", newKey, value
         variableMap[newKey] = opcobject.add_object(ns, opcname)
-        print dir(value)
+        if debugprint:
+            print dir(value)
         for dicKey in value.keys():
             if not dicKey.startswith('_') and dicKey not in pythonMethodMembers and not inspect.isroutine(
                     value[dicKey]) and not inspect.isbuiltin(value[dicKey]):
                 add_entry_to_model(ns, str(dicKey) + "-" + newKey, dicKey, variableMap[newKey], value[dicKey])
     elif isinstance(value, list):
-        print "addList:", newKey, value
+        if debugprint:
+            print "addList:", newKey, value
         if len(value) > 0:
             if isinstance(value[0], (dict, tuple)):
                 variableMap[newKey] = opcobject.add_object(ns, opcname)
                 for listElement in value:
                     add_layer_to_model(ns, newKey, variableMap[newKey], listElement)
             else:
-                variableMap[newKey] = opcobject.add_variable(ns, opcname, value)
+                variableMap[newKey] = opcobject.add_variable(createNamespace(ns, newKey), opcname, value)
     elif isinstance(value, (tuple)):
-        print "addTuple:", newKey, value
+        if debugprint:
+            print "addTuple:", newKey, value
         variableMap[newKey] = opcobject.add_object(ns, opcname)
         add_layer_to_model(ns, newKey, variableMap[newKey], value)
 
     else:
-        print "addSimpleTo", ns, opcobject
-        print "addSimpleValue", newKey, value
+        if debugprint:
+            print "addSimpleTo", ns, opcobject
+            print "addSimpleValue", newKey, value
         if "tool_result" in str(value):
-            print "tool_result has to be skipped/only displayed as string for now", str(value)
-            variableMap[newKey] = opcobject.add_variable(ns, opcname, str(value))
+            if debugprint:
+                print "tool_result has to be skipped/only displayed as string for now", str(value)
+            variableMap[newKey] = opcobject.add_variable(createNamespace(ns, newKey), opcname, str(value))
         else:
-            variableMap[newKey] = opcobject.add_variable(ns, opcname, value)
+            variableMap[newKey] = opcobject.add_variable(createNamespace(ns, newKey), opcname, value)
 
 
 def add_object_layer_to_model(ns, key, opcobject, layerobject):
@@ -88,10 +97,11 @@ def add_object_layer_to_model(ns, key, opcobject, layerobject):
 
 def add_layer_to_model(ns, key, opcobject, layerobject):
     if isinstance(layerobject, (tuple)):
-        print "TupleValues", len(layerobject), layerobject
+        if debugprint:
+            print "TupleValues", len(layerobject), layerobject
         counter = 0
-        newKey = str(counter) + "-" + key
         for entry in layerobject:
+            newKey = str(counter) + "-" + key
             add_entry_to_model(ns, newKey, str(counter), opcobject, entry)
             counter = counter + 1
     else:
@@ -156,7 +166,7 @@ def init_variables_start_server():
     # server.set_endpoint("opc.tcp://localhost:4840/freeopcua/server/")
     server.set_endpoint("opc.tcp://0.0.0.0:4840/")
     server.set_server_name("FreeOpcUa Example Server")
-
+    server.set_security_policy([ua.SecurityPolicyType.NoSecurity])
     # setup our own namespace
     uri = "http://examples.freeopcua.github.io"
     idx = server.register_namespace(uri)
@@ -167,7 +177,7 @@ def init_variables_start_server():
     # populating our address space
     myfolder = objects.add_folder(idx, "pocketnc")
     myobj = myfolder.add_object(idx, "PocketNC")
-    variableMap["counter"] = myobj.add_variable(idx, "counter", 0)
+    variableMap["counter"] = myobj.add_variable(createNamespace(idx, "loop.counter"), "counter", 0)
     # Use a breakpoint in the code line below to debug your script.
     try:
         s = linuxcnc.stat()  # create a connection to the status channel
